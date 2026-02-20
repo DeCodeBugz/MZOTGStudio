@@ -2,83 +2,129 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini RMMZ Studio</title>
     <link rel="manifest" href='data:application/manifest+json,{"name":"Gemini RMMZ Studio","short_name":"GeminiMZ","start_url":".","display":"standalone","background_color":"#121212","theme_color":"#bb86fc","icons":[{"src":"https://via.placeholder.com/192/bb86fc/ffffff?text=MZ","sizes":"192x192","type":"image/png"}]}'>
+    
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --accent: #bb86fc; --text: #e0e0e0; --save: #03dac6; --error: #cf6679; --blue: #3700b3; --arcana: #00dbde; }
+        :root { --bg: #121212; --card: #1e1e1e; --accent: #bb86fc; --text: #e0e0e0; --save: #03dac6; --error: #cf6679; --blue: #3700b3; --arcana: #00dbde; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        header { background: var(--card); padding: 12px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; }
-        .nav-area { flex: 1; }
-        select { width: 100%; padding: 10px; background: #2a2a2a; color: #fff; border: 1px solid var(--accent); border-radius: 6px; font-weight: bold; }
-        .branding { text-align: right; padding-left: 15px; }
-        .branding span { color: var(--accent); font-size: 14px; font-weight: bold; display: block; }
-        main { flex: 1; overflow-y: auto; position: relative; }
-        #editorUI { padding: 15px; padding-bottom: 120px; }
-        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .status-bar { padding: 8px; font-size: 11px; text-align: center; font-weight: bold; }
+        header { background: var(--card); padding: 10px; border-bottom: 2px solid var(--accent); display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; align-items: center; }
+        .branding { text-align: right; font-size: 11px; color: var(--accent); font-weight: bold; line-height: 1.2; }
+        .branding span { color: #fff; font-size: 14px; display: block; }
+        select { width: 100%; padding: 10px; background: #333; color: #fff; border: 1px solid var(--accent); border-radius: 5px; font-weight: bold; }
+        #pwaInstallBtn { background: var(--accent); color: #000; padding: 5px 10px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 5px; display: none; }
+        .status-bar { padding: 10px; font-size: 12px; text-align: center; font-weight: bold; border-bottom: 1px solid rgba(0,0,0,0.3); }
         .status-missing { background: var(--error); color: #000; }
         .status-ok { background: var(--save); color: #000; }
-        label { display: block; font-size: 10px; color: var(--accent); margin-top: 10px; font-weight: bold; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 12px; background: #252525; border: 1px solid #3d3d3d; color: #fff; border-radius: 8px; box-sizing: border-box; margin-top: 5px; }
-        .action-bar { position: fixed; bottom: 0; width: 100%; background: #1a1a1a; padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-top: 1px solid #333; z-index: 1000; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn-load { background: var(--blue); color: #fff; }
+        main { flex: 1; overflow-y: auto; position: relative; }
+        #coverPage { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 20px; box-sizing: border-box; }
+        #coverPage.hidden { display: none !important; }
+        #editorUI { padding: 15px; padding-bottom: 100px; }
+        .card { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        label { display: block; font-size: 0.7em; color: #aaa; margin-top: 8px; font-weight: bold; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 12px; background: #2c2c2c; border: 1px solid #444; color: #fff; border-radius: 5px; box-sizing: border-box; margin-top: 5px; }
+        .arcana-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .res-box { background: #000; border: 1px solid var(--arcana); border-radius: 8px; padding: 15px; margin-top: 15px; }
+        .res-val { font-size: 20px; font-weight: bold; display: block; }
+        .res-small { font-size: 11px; color: #888; }
+        .action-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-top: 1px solid #444; z-index: 100; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; font-size: 12px; }
+        .btn-load { background: var(--blue); color: white; }
         .btn-save { background: var(--save); color: #000; }
-        .btn-danger { background: var(--error); color: #fff; width: 100%; margin-top: 10px; }
+        .btn-danger { background: var(--error); color: #fff; margin-top: 10px; width: 100%; }
         .checkerboard { background-color: #1a1a1a; background-image: linear-gradient(45deg, #222 25%, transparent 25%), linear-gradient(-45deg, #222 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #222 75%), linear-gradient(-45deg, transparent 75%, #222 75%); background-size: 20px 20px; padding: 10px; border-radius: 8px; }
-        #pixelCanvas { background: transparent; image-rendering: pixelated; border: 2px solid var(--accent); display: block; margin: 10px auto; max-width: 90vw; max-height: 40vh; cursor: crosshair; }
+        #pixelCanvas { background: transparent; image-rendering: pixelated; border: 2px solid var(--accent); display: block; margin: 10px auto; max-width: 95vw; max-height: 45vh; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="nav-area">
+    <div>
         <select id="editorSelect" onchange="handleNavChange(this.value)">
-            <option value="Cover">🏠 MENU UTAMA</option>
-            <optgroup label="DATABASE">
-                <option value="Classes">Classes.json</option>
-                <option value="Actors">Actors.json</option>
-                <option value="Enemies">Enemies.json</option>
+            <option value="Cover">-- Pilih Menu --</option>
+            <optgroup label="1. Database Editor">
+                <option value="Classes">Kelas (Classes)</option>
+                <option value="Actors">Aktor (Actors)</option>
+                <option value="Enemies">Musuh (Enemies)</option>
+                <option value="Skills">Skill (Skills)</option>
+                <option value="Items">Barang (Items)</option>
             </optgroup>
-            <optgroup label="TOOLS">
-                <option value="Pixel">Pixel Drawing</option>
+            <optgroup label="2. Alat Balancing">
+                <option value="Arcana">Simulasi Balancing (TTK)</option>
+            </optgroup>
+            <optgroup label="3. Image Editor">
+                <option value="Pixel">Gambar Pixel</option>
             </optgroup>
         </select>
+        <button id="pwaInstallBtn">INSTAL APLIKASI (PWA)</button>
     </div>
-    <div class="branding"><span>GeminiMZ</span><small>V.2.9.6</small></div>
+    <div class="branding">Gemini RMMZ Studio <span>Universal Edition</span></div>
 </header>
 
-<main>
-    <div id="coverPage" style="padding:40px; text-align:center;">
-        <h2 style="color:var(--accent)">Selamat Datang, Lur!</h2>
-        <p style="font-size:12px; color:#888;">Pilih menu nggo mulai ngedit data RPG Maker MZ-mu.</p>
-    </div>
+<div id="statusIndicator" class="status-bar status-missing hidden">READY</div>
 
-    <div id="editorUI" class="hidden">
-        <div id="statusIndicator" class="status-bar status-missing">READY</div>
-        <div id="dynamicContent"></div>
+<main id="appMain">
+    <div id="coverPage">
+        <h1>Gemini RMMZ Studio</h1>
+        <p>Aplikasi balancing on-the-go khusus RPG Maker MZ.<br>V.2.9.8 - DEWA Patch</p>
     </div>
+    <div id="editorUI" class="hidden"><div id="dynamicContent"></div></div>
 </main>
 
 <div id="bottomBar" class="action-bar hidden">
-    <input type="file" id="universalLoad" class="hidden" accept=".json,.js,.png">
-    <button class="btn btn-load" onclick="document.getElementById('universalLoad').click()">MUAT</button>
-    <button class="btn btn-save" onclick="handleExport()">EKPORT</button>
+    <input type="file" id="universalLoad" class="hidden" accept=".json,.js,.txt,.png">
+    <button class="btn btn-load" onclick="document.getElementById('universalLoad').click()">MUAT DATA</button>
+    <button class="btn btn-save" onclick="handleUniversalExport()">SIMPAN / EKPORT</button>
 </div>
 
 <script>
-    let currentMode = 'Cover', db = {}, patches = {}, isDirty = false;
+    let deferredPrompt;
+    const installBtn = document.getElementById('pwaInstallBtn');
+
+    if ('serviceWorker' in navigator) {
+        const sw = 'data:text/javascript;base64,' + btoa('self.addEventListener("fetch", (e) => e.respondWith(fetch(e.request)));');
+        navigator.serviceWorker.register(sw);
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') installBtn.style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    let currentMode = 'Cover';
+    let db = {}, patches = {}, isDirty = false;
     let pixelData = [], pGridSize = 16, pTool = 'draw';
 
     function handleNavChange(val) {
+        if (val === 'Cover') {
+            document.getElementById('coverPage').classList.remove('hidden');
+            document.getElementById('editorUI').classList.add('hidden');
+            document.getElementById('statusIndicator').classList.add('hidden');
+            document.getElementById('bottomBar').classList.add('hidden');
+            return;
+        }
+        if (isDirty && !confirm("Ada perubahan belum disimpan! Yakin pindah?")) {
+            document.getElementById('editorSelect').value = currentMode;
+            return;
+        }
+        document.getElementById('coverPage').classList.add('hidden');
         currentMode = val;
-        const isCover = val === 'Cover';
-        document.getElementById('coverPage').classList.toggle('hidden', !isCover);
-        document.getElementById('editorUI').classList.toggle('hidden', isCover);
-        document.getElementById('bottomBar').classList.toggle('hidden', isCover);
-        if(!isCover) renderMode();
+        document.getElementById('statusIndicator').classList.remove('hidden');
+        document.getElementById('editorUI').classList.remove('hidden');
+        document.getElementById('bottomBar').classList.toggle('hidden', val === 'Arcana');
+        renderMode();
     }
 
     function renderMode() {
@@ -86,78 +132,187 @@
         const status = document.getElementById('statusIndicator');
         container.innerHTML = "";
         
-        if (currentMode === 'Pixel') {
-            status.innerText = "PIXEL DRAWING MODE"; status.className = "status-bar status-ok";
+        if (currentMode === 'Arcana') {
+            status.innerText = "SIMULASI BALANCING AKTIF";
+            status.className = "status-bar status-ok";
             container.innerHTML = `
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-                    <div><label>Warna</label><input type="color" id="pCol" value="#bb86fc" style="height:45px;padding:2px;"></div>
+                <div class="card" style="border-left-color:var(--arcana)">
+                    <h4 style="color:var(--arcana); margin:0;">🛡️ ACTOR (A)</h4>
+                    <div class="arcana-grid">
+                        <div><label>HP</label><input type="number" id="a_hp" value="500" oninput="runArcana()"></div>
+                        <div><label>ATK</label><input type="number" id="a_atk" value="50" oninput="runArcana()"></div>
+                        <div><label>MAT</label><input type="number" id="a_mat" value="40" oninput="runArcana()"></div>
+                        <div><label>DEF</label><input type="number" id="a_def" value="20" oninput="runArcana()"></div>
+                        <div><label>HIT (%)</label><input type="number" id="a_hit" value="95" oninput="runArcana()"></div>
+                        <div><label>CRIT (%)</label><input type="number" id="a_cri" value="10" oninput="runArcana()"></div>
+                    </div>
+                    <h4 style="color:var(--accent); margin:15px 0 0 0;">👹 ENEMY (B)</h4>
+                    <div class="arcana-grid">
+                        <div><label>HP</label><input type="number" id="b_hp" value="800" oninput="runArcana()"></div>
+                        <div><label>ATK</label><input type="number" id="b_atk" value="45" oninput="runArcana()"></div>
+                        <div><label>DEF</label><input type="number" id="b_def" value="15" oninput="runArcana()"></div>
+                        <div><label>MDF</label><input type="number" id="b_mdf" value="15" oninput="runArcana()"></div>
+                        <div><label>EVA (%)</label><input type="number" id="b_eva" value="5" oninput="runArcana()"></div>
+                        <div><label>C.EV (%)</label><input type="number" id="b_cev" value="0" oninput="runArcana()"></div>
+                    </div>
+                    <label>Formula Skill</label>
+                    <input type="text" id="arc_formula" value="a.atk * 4 - b.def * 2" oninput="runArcana()" style="color:var(--accent); font-family:monospace;">
+                    <div class="arcana-grid">
+                        <div><label>Crit Mult</label><input type="number" id="arc_cmult" value="3" oninput="runArcana()"></div>
+                        <div><label>Variasi (%)</label><input type="number" id="arc_vari" value="20" oninput="runArcana()"></div>
+                    </div>
+                    <div class="res-box">
+                        <div class="arcana-grid">
+                            <div><span class="res-small">Normal Hit</span><span class="res-val" id="arc_res_n" style="color:var(--arcana)">0</span></div>
+                            <div><span class="res-small" style="color:var(--accent)">Critical Hit</span><span class="res-val" id="arc_res_c" style="color:var(--accent)">0</span></div>
+                        </div>
+                        <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+                        <div style="text-align:center">
+                            <span class="res-small">Ekspektasi Damage (Avg/Turn)</span>
+                            <span class="res-val" id="arc_res_avg" style="color:yellow">0</span>
+                            <span class="res-val" id="arc_res_ttk" style="color:var(--save); font-size:14px; margin-top:5px;">0 Turn to Kill</span>
+                        </div>
+                    </div>
+                </div>`;
+            runArcana();
+            return;
+        }
+
+        if (currentMode === 'Pixel') {
+            status.innerText = "IMAGE EDITOR MODE";
+            status.className = "status-bar status-ok";
+            container.innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:15px;">
+                    <div><label>Warna</label><input type="color" id="pCol" value="#ffffff" style="height:45px;padding:2px;"></div>
+                    <div><label>Grid</label><input type="number" id="pGrid" value="${pGridSize}" onchange="updatePixelGrid(this.value)"></div>
                     <div><label>Alat</label><button class="btn btn-load" style="width:100%;height:45px;" onclick="togglePixelTool()" id="pToolBtn">PENSIL</button></div>
                 </div>
                 <div class="checkerboard"><canvas id="pixelCanvas"></canvas></div>
                 <button class="btn btn-danger" onclick="clearPixelCanvas()">🗑️ HAPUS SEMUA GAMBAR</button>
-                <div style="margin-top:10px;"><label>Grid Size</label><input type="number" id="pGrid" value="${pGridSize}" onchange="updatePixelGrid(this.value)"></div>
             `;
-            initPixelCanvas(); return;
+            initPixelCanvas();
+            return;
         }
+
         updateDBStatus();
         if (!db[currentMode]) {
-            container.innerHTML = `<p style="text-align:center;padding:50px;color:#666;">File <b>${currentMode}.json</b> durung dimuat.</p>`;
+            container.innerHTML = `<p style="text-align:center;padding-top:60px;color:#666;">Klik <b>MUAT DATA</b> untuk <b>${currentMode}.json</b></p>`;
         } else {
             db[currentMode].forEach((item, idx) => {
                 if (!item || item.id === undefined) return;
-                const card = document.createElement('div'); card.className = "card";
-                card.innerHTML = `<strong>[ID ${item.id}] ${item.name || '---'}</strong><label>Nama</label><input type="text" value="${getVal(currentMode,idx,'name')}" onchange="upd('${currentMode}',${idx},'name',this.value)"><label>Note</label><textarea onchange="upd('${currentMode}',${idx},'note',this.value)">${getVal(currentMode,idx,'note')}</textarea>`;
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `<strong>[ID ${item.id}] ${item.name || '---'}</strong><label>Nama</label><input type="text" value="${getVal(currentMode, idx, 'name')}" onchange="upd('${currentMode}',${idx},'name',this.value)"><label>Catatan</label><textarea onchange="upd('${currentMode}',${idx},'note',this.value)">${getVal(currentMode, idx, 'note')}</textarea>`;
                 container.appendChild(card);
             });
         }
     }
 
-    // --- PIXEL LOGIC ---
-    function initPixelCanvas() {
-        const canvas = document.getElementById('pixelCanvas'); if(!canvas) return;
-        const ctx = canvas.getContext('2d'); canvas.width = canvas.height = 600;
-        if (pixelData.length !== pGridSize) pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null));
-        const drawGrid = () => {
-            ctx.clearRect(0,0,600,600); let sz = 600/pGridSize;
-            pixelData.forEach((row, y) => row.forEach((col, x) => { if(col){ ctx.fillStyle = col; ctx.fillRect(x*sz, y*sz, sz, sz); } }));
-            ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.lineWidth = 1;
-            for(let i=0; i<=pGridSize; i++){ ctx.beginPath(); ctx.moveTo(i*sz,0); ctx.lineTo(i*sz,600); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i*sz); ctx.lineTo(600,i*sz); ctx.stroke(); }
-        };
-        canvas.onclick = (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const gx = Math.floor(((e.clientX - rect.left) * (600/rect.width)) / (600/pGridSize));
-            const gy = Math.floor(((e.clientY - rect.top) * (600/rect.height)) / (600/pGridSize));
-            if(gx>=0 && gx<pGridSize && gy>=0 && gy<pGridSize){ pixelData[gy][gx] = (pTool === 'draw') ? document.getElementById('pCol').value : null; drawGrid(); }
-        }; drawGrid();
+    function runArcana() {
+        try {
+            const a = {
+                hp: parseFloat(document.getElementById('a_hp').value)||0, atk: parseFloat(document.getElementById('a_atk').value)||0,
+                mat: parseFloat(document.getElementById('a_mat').value)||0, def: parseFloat(document.getElementById('a_def').value)||0,
+                hit: (parseFloat(document.getElementById('a_hit').value)||0) / 100, cri: (parseFloat(document.getElementById('a_cri').value)||0) / 100
+            };
+            const b = {
+                hp: parseFloat(document.getElementById('b_hp').value)||0, atk: parseFloat(document.getElementById('b_atk').value)||0,
+                def: parseFloat(document.getElementById('b_def').value)||0, mdf: parseFloat(document.getElementById('b_mdf').value)||0,
+                eva: (parseFloat(document.getElementById('b_eva').value)||0) / 100, cev: (parseFloat(document.getElementById('b_cev').value)||0) / 100
+            };
+            const formula = document.getElementById('arc_formula').value;
+            const cMult = parseFloat(document.getElementById('arc_cmult').value)||1;
+            let baseDmg = new Function('a', 'b', `return ${formula}`)(a, b);
+            if (baseDmg < 1) baseDmg = 1;
+            const netCrit = Math.max(0, a.cri - b.cev);
+            const critDmg = baseDmg * cMult;
+            const finalAcc = Math.max(0, a.hit - b.eva);
+            const avgDmg = ((baseDmg * (1 - netCrit)) + (critDmg * netCrit)) * finalAcc;
+            const ttk = Math.ceil(b.hp / avgDmg);
+            document.getElementById('arc_res_n').innerText = Math.floor(baseDmg);
+            document.getElementById('arc_res_c').innerText = Math.floor(critDmg);
+            document.getElementById('arc_res_avg').innerText = Math.floor(avgDmg);
+            document.getElementById('arc_res_ttk').innerText = (isFinite(ttk) ? ttk : "∞") + " Turn to Kill";
+        } catch (e) { document.getElementById('arc_res_avg').innerText = "ERR"; }
     }
-    function clearPixelCanvas() { if(confirm("Hapus kabeh gambar?")) { pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null)); initPixelCanvas(); } }
-    function updatePixelGrid(v){ pGridSize = parseInt(v); pixelData = []; initPixelCanvas(); }
-    function togglePixelTool(){ pTool = (pTool === 'draw') ? 'erase' : 'draw'; document.getElementById('pToolBtn').innerText = pTool === 'draw' ? 'PENSIL' : 'PENGHAPUS'; }
 
-    // --- DB LOGIC ---
-    function updateDBStatus() { const s = document.getElementById('statusIndicator'); s.innerText = db[currentMode] ? `${currentMode.toUpperCase()} LOADED` : `${currentMode.toUpperCase()} MISSING`; s.className = db[currentMode] ? "status-bar status-ok" : "status-bar status-missing"; }
-    function getVal(t,i,k) { return patches[t]?.[i]?.[k] !== undefined ? patches[t][i][k] : (db[t][i][k] || ""); }
-    function upd(t,i,k,v) { if(!patches[t]) patches[t]={}; if(!patches[t][i]) patches[t][i]={}; patches[t][i][k]=v; isDirty=true; }
-    
+    function updateDBStatus() {
+        const s = document.getElementById('statusIndicator');
+        if (db[currentMode]) { s.innerText = `DATABASE ${currentMode.toUpperCase()} SIAP`; s.className = "status-bar status-ok"; }
+        else { s.innerText = `FILE ${currentMode.toUpperCase()}.JSON BELUM ADA`; s.className = "status-bar status-missing"; }
+    }
+
+    function getVal(tab, idx, key) { return patches[tab]?.[idx]?.[key] !== undefined ? patches[tab][idx][key] : (db[tab][idx][key] || ""); }
+    function upd(tab, idx, key, val) { if (!patches[tab]) patches[tab] = {}; if (!patches[tab][idx]) patches[tab][idx] = {}; patches[tab][idx][key] = val; isDirty = true; }
+
     document.getElementById('universalLoad').onchange = function(e) {
-        const file = e.target.files[0]; if(!file) return;
+        const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
-            if(file.name.endsWith('.json')) { db[currentMode] = JSON.parse(ev.target.result); renderMode(); }
-        }; reader.readAsText(file);
+        if (file.name.endsWith('.js') || file.name.endsWith('.txt')) {
+            reader.onload = (ev) => {
+                const match = ev.target.result.match(/const p = (\{.*?\});/);
+                if (match) { Object.assign(patches, JSON.parse(match[1])); alert("Patch dimuat!"); isDirty = false; renderMode(); }
+            };
+            reader.readAsText(file);
+        } else if (file.name.endsWith('.json')) {
+            reader.onload = (ev) => { db[currentMode] = JSON.parse(ev.target.result); renderMode(); };
+            reader.readAsText(file);
+        } else if (file.name.endsWith('.png') && currentMode === 'Pixel') {
+            reader.onload = (ev) => {
+                const img = new Image(); img.onload = () => {
+                    pGridSize = img.width; document.getElementById('pGrid').value = pGridSize;
+                    const tempC = document.createElement('canvas'); tempC.width = tempC.height = pGridSize;
+                    const tCtx = tempC.getContext('2d'); tCtx.drawImage(img, 0, 0);
+                    const d = tCtx.getImageData(0,0,pGridSize,pGridSize).data;
+                    pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null));
+                    for(let i=0; i<d.length; i+=4) { if(d[i+3] > 10) { const gx = (i/4)%pGridSize, gy = Math.floor((i/4)/pGridSize); pixelData[gy][gx] = "#" + ((1<<24)+(d[i]<<16)+(d[i+1]<<8)+d[i+2]).toString(16).slice(1); } }
+                    initPixelCanvas(); 
+                }; img.src = ev.target.result;
+            }; reader.readAsDataURL(file);
+        }
     };
-    function handleExport() {
-        if(currentMode === 'Pixel') {
+
+    function handleUniversalExport() {
+        if (currentMode === 'Pixel') {
             const out = document.createElement('canvas'); out.width = out.height = pGridSize;
             const oCtx = out.getContext('2d');
             pixelData.forEach((r,y)=>r.forEach((c,x)=>{if(c){oCtx.fillStyle=c;oCtx.fillRect(x,y,1,1);}}));
             const a = document.createElement('a'); a.href = out.toDataURL(); a.download = "GeminiArt.png"; a.click();
         } else {
-            const script = `/*: @target MZ @plugindesc Gemini Patch */\nconst GeminiPatch = ${JSON.stringify(patches)};`;
+            const script = `/*: @target MZ @plugindesc Mobile Patch */\n(() => {\n    const p = ${JSON.stringify(patches)};\n    console.log("Patch Applied!");\n})();`;
             const blob = new Blob([script], { type: 'text/javascript' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "GeminiPatch.js"; a.click();
+            isDirty = false;
         }
     }
+
+    function initPixelCanvas() {
+        const canvas = document.getElementById('pixelCanvas'); if(!canvas) return;
+        const ctx = canvas.getContext('2d'); canvas.width = canvas.height = 600;
+        if (pixelData.length !== pGridSize) pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null));
+        function draw() {
+            ctx.clearRect(0,0,600,600); let sz = 600/pGridSize;
+            pixelData.forEach((row, y) => row.forEach((col, x) => { if(col){ ctx.fillStyle = col; ctx.fillRect(x*sz, y*sz, sz, sz); } }));
+            ctx.strokeStyle = "rgba(255,255,255,0.4)"; ctx.lineWidth = 1;
+            for(let i=0; i<=pGridSize; i++){ ctx.beginPath(); ctx.moveTo(i*sz,0); ctx.lineTo(i*sz,600); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i*sz); ctx.lineTo(600,i*sz); ctx.stroke(); }
+        }
+        canvas.onclick = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const gx = Math.floor(((e.clientX - rect.left) * (600/rect.width)) / (600/pGridSize));
+            const gy = Math.floor(((e.clientY - rect.top) * (600/rect.height)) / (600/pGridSize));
+            if(gx>=0 && gx<pGridSize && gy>=0 && gy<pGridSize){ pixelData[gy][gx] = (pTool === 'draw') ? document.getElementById('pCol').value : null; draw(); }
+        }; draw();
+    }
+    
+    function clearPixelCanvas() {
+        if(confirm("Hapus kabeh gambar neng kanvas?")) {
+            pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null));
+            initPixelCanvas();
+        }
+    }
+
+    function updatePixelGrid(v){ pGridSize = parseInt(v); pixelData = []; initPixelCanvas(); }
+    function togglePixelTool(){ pTool = (pTool === 'draw') ? 'erase' : 'draw'; document.getElementById('pToolBtn').innerText = pTool === 'draw' ? 'PENSIL' : 'PENGHAPUS'; }
 </script>
 </body>
 </html>
