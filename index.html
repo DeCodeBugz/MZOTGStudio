@@ -44,7 +44,7 @@
     <div>
         <select id="editorSelect" onchange="handleNavChange(this.value)">
             <option value="Cover">-- Pilih Menu --</option>
-            <optgroup label="1. Database Editor">
+            <optgroup label="1. Editor Database">
                 <option value="Classes">Kelas (Classes)</option>
                 <option value="Actors">Aktor (Actors)</option>
                 <option value="Enemies">Musuh (Enemies)</option>
@@ -54,7 +54,7 @@
             <optgroup label="2. Alat Balancing">
                 <option value="Arcana">Simulasi Balancing (TTK)</option>
             </optgroup>
-            <optgroup label="3. Image Editor">
+            <optgroup label="3. Editor Gambar">
                 <option value="Pixel">Gambar Pixel</option>
             </optgroup>
         </select>
@@ -63,12 +63,12 @@
     <div class="branding">Gemini RMMZ Studio <span>Universal Edition</span></div>
 </header>
 
-<div id="statusIndicator" class="status-bar status-missing hidden">READY</div>
+<div id="statusIndicator" class="status-bar status-missing hidden">SIAP</div>
 
 <main id="appMain">
     <div id="coverPage">
         <h1>Gemini RMMZ Studio</h1>
-        <p>Aplikasi balancing on-the-go khusus RPG Maker MZ.<br>V.2.9.8 - DEWA Patch</p>
+        <p>Aplikasi balancing on-the-go khusus RPG Maker MZ.<br>V.2.9.8 - DEWA Patch (Bahasa Indonesia)</p>
     </div>
     <div id="editorUI" class="hidden"><div id="dynamicContent"></div></div>
 </main>
@@ -76,7 +76,7 @@
 <div id="bottomBar" class="action-bar hidden">
     <input type="file" id="universalLoad" class="hidden" accept=".json,.js,.txt,.png">
     <button class="btn btn-load" onclick="document.getElementById('universalLoad').click()">MUAT DATA</button>
-    <button class="btn btn-save" onclick="handleUniversalExport()">SIMPAN / EKPORT</button>
+    <button class="btn btn-save" onclick="handleUniversalExport()">SIMPAN / EKSPOR</button>
 </div>
 
 <script>
@@ -137,7 +137,7 @@
             status.className = "status-bar status-ok";
             container.innerHTML = `
                 <div class="card" style="border-left-color:var(--arcana)">
-                    <h4 style="color:var(--arcana); margin:0;">🛡️ ACTOR (A)</h4>
+                    <h4 style="color:var(--arcana); margin:0;">🛡️ AKTOR (A)</h4>
                     <div class="arcana-grid">
                         <div><label>HP</label><input type="number" id="a_hp" value="500" oninput="runArcana()"></div>
                         <div><label>ATK</label><input type="number" id="a_atk" value="50" oninput="runArcana()"></div>
@@ -146,7 +146,7 @@
                         <div><label>HIT (%)</label><input type="number" id="a_hit" value="95" oninput="runArcana()"></div>
                         <div><label>CRIT (%)</label><input type="number" id="a_cri" value="10" oninput="runArcana()"></div>
                     </div>
-                    <h4 style="color:var(--accent); margin:15px 0 0 0;">👹 ENEMY (B)</h4>
+                    <h4 style="color:var(--accent); margin:15px 0 0 0;">👹 MUSUH (B)</h4>
                     <div class="arcana-grid">
                         <div><label>HP</label><input type="number" id="b_hp" value="800" oninput="runArcana()"></div>
                         <div><label>ATK</label><input type="number" id="b_atk" value="45" oninput="runArcana()"></div>
@@ -163,14 +163,14 @@
                     </div>
                     <div class="res-box">
                         <div class="arcana-grid">
-                            <div><span class="res-small">Normal Hit</span><span class="res-val" id="arc_res_n" style="color:var(--arcana)">0</span></div>
-                            <div><span class="res-small" style="color:var(--accent)">Critical Hit</span><span class="res-val" id="arc_res_c" style="color:var(--accent)">0</span></div>
+                            <div><span class="res-small">Hit Normal</span><span class="res-val" id="arc_res_n" style="color:var(--arcana)">0</span></div>
+                            <div><span class="res-small" style="color:var(--accent)">Hit Kritis</span><span class="res-val" id="arc_res_c" style="color:var(--accent)">0</span></div>
                         </div>
                         <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
                         <div style="text-align:center">
-                            <span class="res-small">Ekspektasi Damage (Avg/Turn)</span>
+                            <span class="res-small">Ekspektasi Damage (Rata-rata/Giliran)</span>
                             <span class="res-val" id="arc_res_avg" style="color:yellow">0</span>
-                            <span class="res-val" id="arc_res_ttk" style="color:var(--save); font-size:14px; margin-top:5px;">0 Turn to Kill</span>
+                            <span class="res-val" id="arc_res_ttk" style="color:var(--save); font-size:14px; margin-top:5px;">0 Giliran untuk Membunuh</span>
                         </div>
                     </div>
                 </div>`;
@@ -179,7 +179,7 @@
         }
 
         if (currentMode === 'Pixel') {
-            status.innerText = "IMAGE EDITOR MODE";
+            status.innerText = "MODE EDITOR GAMBAR";
             status.className = "status-bar status-ok";
             container.innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:15px;">
@@ -232,7 +232,7 @@
             document.getElementById('arc_res_n').innerText = Math.floor(baseDmg);
             document.getElementById('arc_res_c').innerText = Math.floor(critDmg);
             document.getElementById('arc_res_avg').innerText = Math.floor(avgDmg);
-            document.getElementById('arc_res_ttk').innerText = (isFinite(ttk) ? ttk : "∞") + " Turn to Kill";
+            document.getElementById('arc_res_ttk').innerText = (isFinite(ttk) ? ttk : "∞") + " Giliran";
         } catch (e) { document.getElementById('arc_res_avg').innerText = "ERR"; }
     }
 
@@ -279,7 +279,7 @@
             pixelData.forEach((r,y)=>r.forEach((c,x)=>{if(c){oCtx.fillStyle=c;oCtx.fillRect(x,y,1,1);}}));
             const a = document.createElement('a'); a.href = out.toDataURL(); a.download = "GeminiArt.png"; a.click();
         } else {
-            const script = `/*: @target MZ @plugindesc Mobile Patch */\n(() => {\n    const p = ${JSON.stringify(patches)};\n    console.log("Patch Applied!");\n})();`;
+            const script = `/*: @target MZ @plugindesc Patch Mobile */\n(() => {\n    const p = ${JSON.stringify(patches)};\n    console.log("Patch Applied!");\n})();`;
             const blob = new Blob([script], { type: 'text/javascript' });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "GeminiPatch.js"; a.click();
             isDirty = false;
@@ -305,7 +305,7 @@
     }
     
     function clearPixelCanvas() {
-        if(confirm("Hapus kabeh gambar neng kanvas?")) {
+        if(confirm("Hapus seluruh gambar pada kanvas?")) {
             pixelData = Array(pGridSize).fill().map(() => Array(pGridSize).fill(null));
             initPixelCanvas();
         }
